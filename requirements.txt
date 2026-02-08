@@ -1,8 +1,5 @@
 streamlit==1.32.2
-TTS==0.18.2
-torch==2.1.2+cpu
-torchaudio==2.1.2+cpu
-
+TTS==0.17.9
+ffmpeg-python
+opencv-python-headless
 pandas==1.5.3
-opencv-python-headless==4.9.0.80
-ffmpeg-python==0.2.0
