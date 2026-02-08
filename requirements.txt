@@ -1,15 +1,15 @@
 streamlit==1.32.2
 
-# audio/tts
+# TTS stack
 TTS==0.17.9
-torch==2.1.2
-torchaudio==2.1.2
+torch==2.1.2+cpu
+torchaudio==2.1.2+cpu
 
-# core numeric stack (compatible set)
-numpy==1.24.4
+# numeric stack (compatible with TTS)
+numpy==1.26.4
+scipy==1.11.4
 pandas==1.5.3
-scipy==1.10.1
-numba==0.57.1
+numba==0.58.1
 librosa==0.10.1
 soundfile==0.12.1
 
@@ -17,6 +17,6 @@ soundfile==0.12.1
 opencv-python-headless==4.9.0.80
 ffmpeg-python==0.2.0
 
-# misc required by TTS
+# misc
 transformers==4.36.2
 tqdm==4.66.1
