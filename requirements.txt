@@ -1,6 +1,5 @@
 streamlit==1.32.2
-TTS==0.18.3
-
+TTS==0.18.2
 torch==2.1.2+cpu
 torchaudio==2.1.2+cpu
 
