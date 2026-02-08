@@ -36,7 +36,10 @@ RUN pip install --upgrade pip setuptools wheel
 # Install dlib using system cmake
 RUN pip install --no-cache-dir dlib-bin
 
-# Install Python dependencies
+# Install TTS first to lock numpy version (TTS requires numpy==1.22.0 for Python 3.10)
+RUN pip install --no-cache-dir TTS==0.22.0
+
+# Install remaining Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
