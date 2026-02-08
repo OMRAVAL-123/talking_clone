@@ -4,6 +4,9 @@ streamlit==1.32.2
 # TTS - installed separately in Dockerfile before requirements.txt
 # to lock numpy==1.22.0 version first
 
+# Transformers for TTS model compatibility
+transformers==4.36.2
+
 # PyTorch stack - compatible versions for Python 3.10
 torch==2.1.2
 torchaudio==2.1.2
