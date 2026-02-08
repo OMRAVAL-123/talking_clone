@@ -1,20 +1,228 @@
-body {
-    background: linear-gradient(135deg, #cfefff, #eaf9ff);
+/* ============================================
+   Voice Clone Studio - Premium Dark Theme
+   ============================================ */
+
+/* Root Variables */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --dark-bg: #0f0f1a;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --accent-color: #667eea;
+    --success-color: #00d68f;
+    --warning-color: #ffaa00;
+    --border-radius: 16px;
+    --glass-blur: blur(20px);
 }
 
-.stApp {
-    background: transparent;
+/* Global Background */
+body, .stApp {
+    background: var(--dark-bg) !important;
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%) !important;
+    min-height: 100vh;
 }
 
+/* Main Title */
 h1 {
-    color: #0b3d5c;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-align: center;
+    font-weight: 800;
+    font-size: 2.5rem !important;
+    margin-bottom: 0.5rem !important;
+    text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
 }
 
-button {
-    background-color: #3aa6ff !important;
+/* Subtitle/Caption */
+.stCaption {
+    text-align: center !important;
+    color: var(--text-secondary) !important;
+    font-size: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+/* File Uploader Cards */
+[data-testid="stFileUploader"] {
+    background: var(--card-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--border-radius) !important;
+    padding: 1.5rem !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+/* Upload Labels */
+[data-testid="stFileUploader"] label {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+}
+
+/* Primary Button */
+button[kind="primary"], 
+.stButton > button[type="button"] {
+    background: var(--primary-gradient) !important;
     color: white !important;
-    border-radius: 10px !important;
-    height: 45px;
-    font-size: 16px;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 2rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4) !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+}
+
+button[kind="primary"]:hover,
+.stButton > button[type="button"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6) !important;
+}
+
+/* Download Button */
+.stDownloadButton > button {
+    background: var(--secondary-gradient) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 20px rgba(245, 87, 108, 0.4) !important;
+}
+
+.stDownloadButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 30px rgba(245, 87, 108, 0.6) !important;
+}
+
+/* Expander (Advanced Options) */
+.streamlit-expanderHeader {
+    background: var(--card-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--border-radius) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+.streamlit-expanderContent {
+    background: var(--card-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--border-radius) var(--border-radius) !important;
+    padding: 1rem !important;
+}
+
+/* Slider */
+.stSlider > div > div > div {
+    background: var(--primary-gradient) !important;
+}
+
+.stSlider label {
+    color: var(--text-primary) !important;
+}
+
+/* Checkbox */
+.stCheckbox label {
+    color: var(--text-primary) !important;
+}
+
+/* Alert Messages */
+.stAlert {
+    border-radius: var(--border-radius) !important;
+    border: none !important;
+}
+
+[data-testid="stAlert"] {
+    backdrop-filter: var(--glass-blur) !important;
+}
+
+/* Success Message */
+.stSuccess {
+    background: rgba(0, 214, 143, 0.1) !important;
+    border-left: 4px solid var(--success-color) !important;
+}
+
+/* Warning Message */
+.stWarning {
+    background: rgba(255, 170, 0, 0.1) !important;
+    border-left: 4px solid var(--warning-color) !important;
+}
+
+/* Info/Spinner Message */
+.stSpinner > div {
+    border-color: var(--accent-color) transparent transparent transparent !important;
+}
+
+/* Video Player */
+video {
+    border-radius: var(--border-radius) !important;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Horizontal Rule */
+hr {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    margin: 2rem 0 !important;
+}
+
+/* Columns Layout */
+[data-testid="column"] {
+    padding: 0.5rem !important;
+}
+
+/* Hide Streamlit Branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 4px;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animations to main content */
+.main .block-container {
+    animation: slideUp 0.5s ease-out;
 }
