@@ -1,8 +1,8 @@
 # Core framework
 streamlit==1.32.2
 
-# TTS - Coqui XTTS v2 (requires Python 3.10)
-TTS==0.22.0
+# TTS - installed separately in Dockerfile before requirements.txt
+# to lock numpy==1.22.0 version first
 
 # PyTorch stack - compatible versions for Python 3.10
 torch==2.1.2
@@ -31,7 +31,7 @@ llvmlite>=0.41.0
 # Image/Video processing
 opencv-python-headless>=4.9.0.80
 pillow>=10.2.0
-numpy>=1.24.0,<2.0.0
+# numpy version managed by TTS (requires 1.22.0 for Python 3.10)
 
 # Utilities
 ffmpeg-python>=0.2.0
