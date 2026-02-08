@@ -6,7 +6,7 @@ ENV COQUI_TOS_AGREED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies (fixed for Debian Trixie)
+# Install system dependencies (cmake via apt, not pip)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     git \
@@ -30,10 +30,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Upgrade pip and install build tools
-RUN pip install --upgrade pip setuptools wheel cmake
+# Upgrade pip and setuptools (NOT cmake - use system cmake)
+RUN pip install --upgrade pip setuptools wheel
 
-# Install dlib separately (needs compilation)
+# Install dlib using system cmake
 RUN pip install --no-cache-dir dlib
 
 # Install Python dependencies
@@ -46,7 +46,7 @@ RUN git clone --depth 1 https://github.com/OpenTalker/SadTalker.git
 # Create checkpoint directories
 RUN mkdir -p SadTalker/checkpoints SadTalker/gfpgan/weights
 
-# Download SadTalker models (with fallback)
+# Download SadTalker models
 RUN cd SadTalker && \
     wget -q -O checkpoints/auido2exp_00300-model.pth \
     "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2exp_00300-model.pth" || true && \
