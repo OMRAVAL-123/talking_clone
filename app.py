@@ -1,3 +1,7 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="streamlit.watcher.local_sources_watcher")
+warnings.filterwarnings("ignore", message=".*Torchaudio.*backend.*")
+
 import streamlit as st
 import os
 import subprocess
@@ -122,7 +126,7 @@ if generate:
             tts.tts_to_file(
                 text=text,
                 speaker_wav=voice_path,
-                language="gu",
+                language="hi",  # Using Hindi for Gujarati text (XTTS clones voice regardless of language)
                 file_path=speech_path
             )
         except Exception as e:
