@@ -7,6 +7,10 @@ import os
 import subprocess
 import sys
 from TTS.api import TTS
+import soundfile as sf  # Added for debug audio info
+
+# --- DEBUG FLAG ---
+DEBUG = True
 
 st.set_page_config(
     page_title="Voice Clone Studio", 
@@ -112,6 +116,12 @@ if generate:
 
     text = open(lyrics_path, encoding="utf-8").read()
 
+    # [DEBUG STEP 1] Show text
+    if DEBUG:
+        st.write("---")
+        st.subheader("DEBUG: 1. Input Text")
+        st.code(text)
+
     # ---------- TTS: Generate Speech ----------
     with st.spinner("🔊 Loading voice model (XTTS v2)..."):
         try:
@@ -133,6 +143,29 @@ if generate:
             st.error(f"Speech generation failed: {e}")
             st.stop()
 
+    # [DEBUG STEP 2] Validate & Preview Audio
+    if DEBUG:
+        st.write("---")
+        st.subheader("DEBUG: 2. Audio Generation")
+        
+        # Verify file exists
+        if not os.path.exists(speech_path):
+            st.error("speech.wav not created")
+            st.stop()
+            
+        # Preview audio
+        st.subheader("Generated Audio Preview")
+        st.audio(speech_path)
+        
+        # Show file stats
+        try:
+            f_size = os.path.getsize(speech_path) / (1024 * 1024)
+            data, samplerate = sf.read(speech_path)
+            duration = len(data) / samplerate
+            st.info(f"File size: {f_size:.2f} MB | Duration: {duration:.2f} s")
+        except Exception as e:
+            st.warning(f"Could not read audio stats: {e}")
+
     # ---------- SadTalker: Generate Expressive Animation ----------
     with st.spinner("🎭 Generating facial expressions and head movements..."):
         
@@ -143,6 +176,7 @@ if generate:
             "--source_image", f"../{face_path}",    # Relative to SadTalker/
             "--result_dir", "../results",            # Relative to SadTalker/
             "--expression_scale", str(expression_scale),
+            # Note: NOT passing --old_version, so it uses new safetensors format by default
         ]
         
         # Add optional flags
@@ -151,8 +185,25 @@ if generate:
         
         if enhance_face:
             sadtalker_cmd.extend(["--enhancer", "gfpgan"])
+
+        # [DEBUG STEP 3] Pre-SadTalker Environment Checks
+        if DEBUG:
+            st.write("---")
+            st.subheader("DEBUG: 3. SadTalker Environment")
+            st.write(f"**Working Directory:** {os.getcwd()}")
+            
+            st.write("**Full Subprocess Command:**")
+            st.code(" ".join(sadtalker_cmd))
+            
+            st.write("**File Existence Checks:**")
+            check_files = ["inputs/face.jpg", speech_path]
+            for f in check_files:
+                exists = os.path.exists(f)
+                status = "✅ EXISTS" if exists else "❌ MISSING"
+                st.write(f"- `{f}` : {status}")
         
         try:
+            # [DEBUG STEP 4] Run with full logs
             result = subprocess.run(
                 sadtalker_cmd,
                 cwd="SadTalker",  # ⭐ THIS IS THE KEY FIX - run from SadTalker directory
@@ -161,9 +212,33 @@ if generate:
                 timeout=600  # 10 minute timeout
             )
             
+            if DEBUG:
+                st.write("---")
+                st.subheader("DEBUG: 4. SadTalker Execution Log")
+                
+                st.subheader("STDOUT")
+                if result.stdout:
+                    st.code(result.stdout)
+                else:
+                    st.info("No STDOUT captured")
+                    
+                st.subheader("STDERR")
+                if result.stderr:
+                    st.code(result.stderr)
+                else:
+                    st.info("No STDERR captured")
+                    
+                st.write(f"**Return Code:** {result.returncode}")
+
+            # [DEBUG STEP 5] Failure handling
             if result.returncode != 0:
-                st.error(f"SadTalker failed:\n{result.stderr}")
+                st.error("❌ SadTalker execution failed!")
+                # If not already shown via DEBUG, show logs now (per rules: never silently fail)
+                if not DEBUG: 
+                    st.subheader("Error Logs")
+                    st.code(result.stderr)
                 st.stop()
+                
                 
         except subprocess.TimeoutExpired:
             st.error("Video generation timed out. Try a shorter audio or simpler image.")
