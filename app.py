@@ -5,7 +5,7 @@ from TTS.api import TTS
 st.set_page_config(page_title="Voice Clone Studio", layout="centered")
 
 # ---------- UI STYLE ----------
-with open("style.css") as f:
+with open("styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 st.title("🎙️ Gujarati Voice Clone → Talking Photo")
@@ -46,7 +46,7 @@ if generate:
 
     subprocess.run([
         "python","Wave2Lip/inference.py",
-        "--checkpoint_path","Wave2Lip/wave2lip_gan.pth",
+        "--checkpoint_path","Wave2Lip/checkpoints/wav2lip_gan.pth",
         "--face","inputs/face.jpg",
         "--audio","speech.wav",
         "--outfile","output.mp4"
