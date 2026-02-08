@@ -1,0 +1,20 @@
+body {
+    background: linear-gradient(135deg, #cfefff, #eaf9ff);
+}
+
+.stApp {
+    background: transparent;
+}
+
+h1 {
+    color: #0b3d5c;
+    text-align: center;
+}
+
+button {
+    background-color: #3aa6ff !important;
+    color: white !important;
+    border-radius: 10px !important;
+    height: 45px;
+    font-size: 16px;
+}

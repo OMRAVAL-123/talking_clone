@@ -1,0 +1,7 @@
+streamlit
+TTS==0.17.9
+torch
+torchvision
+torchaudio
+opencv-python
+ffmpeg-python
