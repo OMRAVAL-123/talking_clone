@@ -43,28 +43,35 @@ RUN pip install --no-cache-dir TTS==0.22.0
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Cache bust for checkpoint downloads - change this to force rebuild
+ARG CACHEBUST=2026-02-08-v3
+
 # Clone SadTalker
 RUN git clone --depth 1 https://github.com/OpenTalker/SadTalker.git
 
 # Create checkpoint directories
 RUN mkdir -p SadTalker/checkpoints SadTalker/gfpgan/weights
 
-# Download SadTalker models
+# Download SadTalker models (NO || true - we WANT failures to be visible)
 RUN cd SadTalker && \
-    wget -q -O checkpoints/auido2exp_00300-model.pth \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2exp_00300-model.pth" || true && \
-    wget -q -O checkpoints/auido2pose_00140-model.pth \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2pose_00140-model.pth" || true && \
-    wget -q -O checkpoints/mapping_00229-model.pth.tar \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/mapping_00229-model.pth.tar" || true && \
-    wget -q -O checkpoints/mapping_00109-model.pth.tar \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/mapping_00109-model.pth.tar" || true && \
-    wget -q -O checkpoints/facevid2vid_00189-model.pth.tar \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/facevid2vid_00189-model.pth.tar" || true && \
-    wget -q -O checkpoints/epoch_20.pth \
-    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/epoch_20.pth" || true && \
-    wget -q -O gfpgan/weights/GFPGANv1.4.pth \
-    "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth" || true
+    echo "Downloading SadTalker checkpoints..." && \
+    wget --no-verbose --show-progress -O checkpoints/auido2exp_00300-model.pth \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2exp_00300-model.pth" && \
+    wget --no-verbose --show-progress -O checkpoints/auido2pose_00140-model.pth \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2pose_00140-model.pth" && \
+    wget --no-verbose --show-progress -O checkpoints/mapping_00229-model.pth.tar \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/mapping_00229-model.pth.tar" && \
+    wget --no-verbose --show-progress -O checkpoints/mapping_00109-model.pth.tar \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/mapping_00109-model.pth.tar" && \
+    wget --no-verbose --show-progress -O checkpoints/facevid2vid_00189-model.pth.tar \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/facevid2vid_00189-model.pth.tar" && \
+    wget --no-verbose --show-progress -O checkpoints/epoch_20.pth \
+    "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/epoch_20.pth" && \
+    wget --no-verbose --show-progress -O gfpgan/weights/GFPGANv1.4.pth \
+    "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth" && \
+    echo "✅ Verifying all checkpoints exist..." && \
+    ls -lh checkpoints/ && \
+    ls -lh gfpgan/weights/
 
 # Copy application files
 COPY . .

@@ -138,10 +138,10 @@ if generate:
         
         sadtalker_cmd = [
             sys.executable,
-            "SadTalker/inference.py",
-            "--driven_audio", speech_path,
-            "--source_image", face_path,
-            "--result_dir", "results",
+            "inference.py",  # Run from SadTalker directory
+            "--driven_audio", f"../{speech_path}",  # Relative to SadTalker/
+            "--source_image", f"../{face_path}",    # Relative to SadTalker/
+            "--result_dir", "../results",            # Relative to SadTalker/
             "--expression_scale", str(expression_scale),
         ]
         
@@ -155,6 +155,7 @@ if generate:
         try:
             result = subprocess.run(
                 sadtalker_cmd,
+                cwd="SadTalker",  # ⭐ THIS IS THE KEY FIX - run from SadTalker directory
                 capture_output=True,
                 text=True,
                 timeout=600  # 10 minute timeout
