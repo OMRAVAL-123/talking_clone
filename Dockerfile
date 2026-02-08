@@ -3,12 +3,10 @@ FROM python:3.10-slim
 
 # Automatically agree to Coqui TTS TOS
 ENV COQUI_TOS_AGREED=1
-
-# Set environment variables for better behavior
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies (including those needed for dlib compilation)
+# Install system dependencies (fixed for Debian Trixie)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     git \
@@ -16,41 +14,39 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     libsndfile1 \
     libgomp1 \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender1 \
-    # Build tools for dlib
     cmake \
     build-essential \
     libopenblas-dev \
     liblapack-dev \
     libx11-dev \
     libgtk-3-dev \
-    # Additional for dlib
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Upgrade pip and install build tools first
+# Upgrade pip and install build tools
 RUN pip install --upgrade pip setuptools wheel cmake
 
-# Install dlib separately first (before other requirements)
+# Install dlib separately (needs compilation)
 RUN pip install --no-cache-dir dlib
 
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Clone SadTalker (full facial expression animation)
+# Clone SadTalker
 RUN git clone --depth 1 https://github.com/OpenTalker/SadTalker.git
 
-# Create directories for SadTalker checkpoints
+# Create checkpoint directories
 RUN mkdir -p SadTalker/checkpoints SadTalker/gfpgan/weights
 
-# Download SadTalker pretrained models
+# Download SadTalker models (with fallback)
 RUN cd SadTalker && \
     wget -q -O checkpoints/auido2exp_00300-model.pth \
     "https://github.com/OpenTalker/SadTalker/releases/download/v0.0.2-rc/auido2exp_00300-model.pth" || true && \
