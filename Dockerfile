@@ -1,17 +1,14 @@
-FROM python:3.10
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y ffmpeg git && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y ffmpeg git wget
-
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-RUN git clone https://github.com/Rudrabha/Wave2Lip.git
-RUN wget https://storage.googleapis.com/wave2lip_models/wave2lip_gan.pth -P Wave2Lip
+RUN pip install --no-cache-dir -r requirements.txt \
+    --extra-index-url https://download.pytorch.org/whl/cpu
 
 COPY . .
 
 EXPOSE 7860
-
 CMD ["streamlit", "run", "app.py", "--server.port=7860", "--server.address=0.0.0.0"]
