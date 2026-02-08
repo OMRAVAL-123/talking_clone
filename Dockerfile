@@ -34,7 +34,7 @@ WORKDIR /app
 RUN pip install --upgrade pip setuptools wheel
 
 # Install dlib using system cmake
-RUN pip install --no-cache-dir dlib
+RUN pip install --no-cache-dir dlib-bin
 
 # Install Python dependencies
 COPY requirements.txt .
