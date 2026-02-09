@@ -57,7 +57,36 @@ with main_col:
     with col3:
         st.markdown('<div class="upload-card">', unsafe_allow_html=True)
         lyrics = st.file_uploader("📝 Script/Lyrics", type=["txt"], help="Text to be spoken")
-        language_mode = st.radio("Language", ["Gujarati", "English"], horizontal=True, key="lang_select")
+        
+        # Supported languages by XTTS v2
+        # Note: "Gujarati" is not natively supported, mapping to "hi" as per request
+        language_options = {
+            "English": "en",
+            "Spanish": "es",
+            "French": "fr",
+            "German": "de",
+            "Italian": "it",
+            "Portuguese": "pt",
+            "Polish": "pl",
+            "Turkish": "tr",
+            "Russian": "ru",
+            "Dutch": "nl",
+            "Czech": "cs",
+            "Arabic": "ar",
+            "Chinese": "zh-cn",
+            "Japanese": "ja",
+            "Hungarian": "hu",
+            "Korean": "ko",
+            "Hindi": "hi",
+            "Gujarati": "hi" 
+        }
+        
+        selected_language = st.selectbox(
+            "Language", 
+            options=list(language_options.keys()),
+            index=0, # Default to English
+            help="Select the language of the input text"
+        )
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -117,16 +146,15 @@ if generate:
 
     text = open(lyrics_path, encoding="utf-8").read()
 
-    # Determine language code
-    # "hi" is used for Gujarati as per previous implementation logic (XTTS heuristic)
-    selected_lang_code = "en" if language_mode == "English" else "hi"
+    # Get language code from selection
+    selected_lang_code = language_options[selected_language]
 
     # [DEBUG STEP 1] Show text
     if DEBUG:
         st.write("---")
         st.subheader("DEBUG: 1. Input Text")
         st.code(text)
-        st.write(f"Selected Language: {language_mode} (Code: {selected_lang_code})")
+        st.write(f"Selected Language: {selected_language} (Code: {selected_lang_code})")
 
     # ---------- TTS: Generate Speech ----------
     with st.spinner("🔊 Loading voice model (XTTS v2)..."):
@@ -135,6 +163,11 @@ if generate:
         except Exception as e:
             st.error(f"Failed to load TTS model: {e}")
             st.stop()
+            
+    # Check if GPU is available for TTS
+    import torch
+    if torch.cuda.is_available():
+        tts.to("cuda")
 
     speech_path = "speech.wav"
     with st.spinner("🎙️ Generating cloned speech..."):

@@ -58,7 +58,8 @@ RUN cd SadTalker && \
     ls -lh gfpgan/weights/
 
 # Fix numpy compatibility issue in SadTalker (replace deprecated np.float with float)
-RUN sed -i "s/np.float/float/g" SadTalker/src/face3d/util/my_awing_arch.py
+RUN sed -i "s/np.float/float/g" SadTalker/src/face3d/util/my_awing_arch.py && \
+    sed -i "s/trans_params = np.array(\[w0, h0, s, t\[0\], t\[1\]\])/trans_params = np.array([float(w0), float(h0), float(s), float(t[0]), float(t[1])])/g" SadTalker/src/face3d/util/preprocess.py
 
 # Copy application files
 COPY . .
