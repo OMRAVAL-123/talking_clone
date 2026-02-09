@@ -57,6 +57,7 @@ with main_col:
     with col3:
         st.markdown('<div class="upload-card">', unsafe_allow_html=True)
         lyrics = st.file_uploader("📝 Script/Lyrics", type=["txt"], help="Text to be spoken")
+        language_mode = st.radio("Language", ["Gujarati", "English"], horizontal=True, key="lang_select")
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -116,11 +117,16 @@ if generate:
 
     text = open(lyrics_path, encoding="utf-8").read()
 
+    # Determine language code
+    # "hi" is used for Gujarati as per previous implementation logic (XTTS heuristic)
+    selected_lang_code = "en" if language_mode == "English" else "hi"
+
     # [DEBUG STEP 1] Show text
     if DEBUG:
         st.write("---")
         st.subheader("DEBUG: 1. Input Text")
         st.code(text)
+        st.write(f"Selected Language: {language_mode} (Code: {selected_lang_code})")
 
     # ---------- TTS: Generate Speech ----------
     with st.spinner("🔊 Loading voice model (XTTS v2)..."):
@@ -136,7 +142,7 @@ if generate:
             tts.tts_to_file(
                 text=text,
                 speaker_wav=voice_path,
-                language="hi",  # Using Hindi for Gujarati text (XTTS clones voice regardless of language)
+                language=selected_lang_code,
                 file_path=speech_path
             )
         except Exception as e:

@@ -57,6 +57,9 @@ RUN cd SadTalker && \
     ls -lh checkpoints/ && \
     ls -lh gfpgan/weights/
 
+# Fix numpy compatibility issue in SadTalker (replace deprecated np.float with float)
+RUN sed -i "s/np.float/float/g" SadTalker/src/face3d/util/my_awing_arch.py
+
 # Copy application files
 COPY . .
 
