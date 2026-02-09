@@ -245,10 +245,10 @@ if generate:
             # [DEBUG STEP 4] Run with full logs
             result = subprocess.run(
                 sadtalker_cmd,
-                cwd="SadTalker",  # ⭐ THIS IS THE KEY FIX - run from SadTalker directory
+                cwd="SadTalker",  
                 capture_output=True,
                 text=True,
-                timeout=600  # 10 minute timeout
+                timeout=18000 
             )
             
             if DEBUG:
