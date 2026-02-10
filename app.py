@@ -240,48 +240,66 @@ if generate:
                 exists = os.path.exists(f)
                 status = "✅ EXISTS" if exists else "❌ MISSING"
                 st.write(f"- `{f}` : {status}")
+
+        # Live Progress Tracking
+        st.write("---")
+        st.subheader("Processing Status")
+        prog_bar = st.progress(0)
+        status_text = st.empty()
+        log_expander = st.expander("Show Real-time Logs", expanded=True)
+        log_container = log_expander.empty()
+        
+        full_logs = []
         
         try:
-            # [DEBUG STEP 4] Run with full logs
-            result = subprocess.run(
+            # Use Popen to stream stdout/stderr in real-time
+            process = subprocess.Popen(
                 sadtalker_cmd,
-                cwd="SadTalker",  
-                capture_output=True,
+                cwd="SadTalker",
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, # Merge stderr into stdout to catch tqdm bars
                 text=True,
-                timeout=18000 
+                bufsize=1,
+                universal_newlines=True
             )
             
-            if DEBUG:
-                st.write("---")
-                st.subheader("DEBUG: 4. SadTalker Execution Log")
+            import re
+            
+            # Read line by line
+            for line in process.stdout:
+                full_logs.append(line)
                 
-                st.subheader("STDOUT")
-                if result.stdout:
-                    st.code(result.stdout)
-                else:
-                    st.info("No STDOUT captured")
-                    
-                st.subheader("STDERR")
-                if result.stderr:
-                    st.code(result.stderr)
-                else:
-                    st.info("No STDERR captured")
-                    
-                st.write(f"**Return Code:** {result.returncode}")
-
-            # [DEBUG STEP 5] Failure handling
-            if result.returncode != 0:
+                # Update log text (keep last 20 lines)
+                log_container.code("".join(full_logs[-20:]))
+                
+                # Try to detect what's happening for the status text
+                lower_line = line.lower()
+                if "loading" in lower_line:
+                    status_text.text(f"Status: {line.strip()}")
+                elif "generating" in lower_line:
+                    status_text.text(f"Status: Generating Animation Frames...")
+                elif "face enhancer" in lower_line or "gfpgan" in lower_line:
+                    status_text.text(f"Status: Enhancing Faces (GFPGAN)...")
+                
+                # Try to parse tqdm percentage
+                # Look for pattern like: 50%|#####     |
+                match = re.search(r"(\d+)%\|", line)
+                if match:
+                    try:
+                        percent = int(match.group(1))
+                        prog_bar.progress(percent / 100)
+                    except ValueError:
+                        pass
+            
+            # Wait for process to finish
+            process.wait()
+            
+            if process.returncode != 0:
                 st.error("❌ SadTalker execution failed!")
-                # If not already shown via DEBUG, show logs now (per rules: never silently fail)
-                if not DEBUG: 
-                    st.subheader("Error Logs")
-                    st.code(result.stderr)
+                st.subheader("Error Logs")
+                st.code("".join(full_logs))
                 st.stop()
                 
-                
-        except subprocess.TimeoutExpired:
-            st.error("Video generation timed out. Try a shorter audio or simpler image.")
-            st.stop()
         except Exception as e:
             st.error(f"Animation failed: {e}")
             st.stop()
@@ -336,7 +354,7 @@ st.markdown("""
             <h3>💡 Pro Tips</h3>
             <ul>
                 <li>📸 Use a clear, well-lit, front-facing photo for best results</li>
-                <li>🎤 Provide 10-20 seconds of clear voice sample without background noise</li>
+                <li>🎤 Provide 40-50 seconds of clear voice sample without background noise</li>
                 <li>🎭 Adjust expression intensity for more or less dramatic facial movements</li>
                 <li>✨ Enable GFPGAN enhancement for higher quality output</li>
             </ul>
