@@ -60,11 +60,11 @@ RUN cd SadTalker && \
 # Clone Wav2Lip
 RUN git clone https://github.com/Rudrabha/Wav2Lip.git
 
-# Download Wav2Lip models from Hugging Face
-RUN mkdir -p Wav2Lip/checkpoints && \
-    wget "https://huggingface.co/guozhaozhe/Wav2Lip/resolve/main/wav2lip_gan.pth" -O Wav2Lip/checkpoints/wav2lip_gan.pth && \
-    mkdir -p Wav2Lip/face_detection/detection/sfd && \
-    wget "https://huggingface.co/guozhaozhe/Wav2Lip/resolve/main/s3fd.pth" -O Wav2Lip/face_detection/detection/sfd/s3fd.pth
+# Download Wav2Lip models using huggingface_hub (more reliable than wget for HF)
+RUN pip install huggingface-hub
+RUN python3 -c "from huggingface_hub import hf_hub_download; \
+    hf_hub_download(repo_id='camenduru/Wav2Lip', filename='wav2lip_gan.pth', local_dir='Wav2Lip/checkpoints', local_dir_use_symlinks=False); \
+    hf_hub_download(repo_id='camenduru/Wav2Lip', filename='s3fd.pth', local_dir='Wav2Lip/face_detection/detection/sfd', local_dir_use_symlinks=False)"
 
 # Fix numpy compatibility issue in SadTalker (replace deprecated np.float with float)
 RUN sed -i "s/np.float/float/g" SadTalker/src/face3d/util/my_awing_arch.py && \
