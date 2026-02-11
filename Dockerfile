@@ -60,13 +60,17 @@ RUN cd SadTalker && \
 # Clone Wav2Lip
 RUN git clone https://github.com/Rudrabha/Wav2Lip.git
 
-# Download Wav2Lip models using official direct links
+# Download Wav2Lip models from Hugging Face with authentication
+# Note: HF_TOKEN is automatically available as a build secret in HF Spaces
 RUN mkdir -p Wav2Lip/checkpoints && \
-    wget 'https://iiitaphyd-my.sharepoint.com/personal/radrabha_m_research_iiit_ac_in/_layouts/15/download.aspx?share=EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA' \
+    wget --header="Authorization: Bearer ${HF_TOKEN}" \
+    'https://huggingface.co/Nekochu/Wav2Lip/resolve/main/wav2lip_gan.pth' \
     -O 'Wav2Lip/checkpoints/wav2lip_gan.pth' && \
     mkdir -p Wav2Lip/face_detection/detection/sfd && \
-    wget 'https://www.adrianbulat.com/downloads/python-fan/s3fd-619a316812.pth' \
-    -O 'Wav2Lip/face_detection/detection/sfd/s3fd.pth'
+    wget --header="Authorization: Bearer ${HF_TOKEN}" \
+    'https://huggingface.co/Nekochu/Wav2Lip/resolve/main/s3fd.pth' \
+    -O 'Wav2Lip/face_detection/detection/sfd/s3fd.pth' && \
+    echo "✅ Wav2Lip models downloaded successfully"
 
 # Fix numpy compatibility issue in SadTalker (replace deprecated np.float with float)
 RUN sed -i "s/np.float/float/g" SadTalker/src/face3d/util/my_awing_arch.py && \
