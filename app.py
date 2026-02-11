@@ -29,6 +29,7 @@ st.markdown("""
         <p class="subtitle">Transform your photos into expressive talking avatars with AI-powered voice cloning</p>
         <div class="tech-badges">
             <span class="badge">🎭 SadTalker</span>
+            <span class="badge">👄 Wav2Lip</span>
             <span class="badge">🗣️ XTTS v2</span>
             <span class="badge">✨ GFPGAN</span>
         </div>
@@ -115,6 +116,11 @@ with main_col:
                 "Enhance Face Quality (GFPGAN)", 
                 value=True,
                 help="Use GFPGAN to improve output face quality"
+            )
+            use_wav2lip = st.checkbox(
+                "Enhanced Lip Sync (Wav2Lip)", 
+                value=True,
+                help="Use Wav2Lip for sharper, more accurate lip synchronization"
             )
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -311,9 +317,71 @@ if generate:
         if f.endswith(".mp4"):
             output_files.append(os.path.join("results", f))
     
-    if output_files:
-        # Get the most recent output
-        output_path = max(output_files, key=os.path.getctime)
+    if not output_files:
+        st.error("❌ No output video found. Check SadTalker logs for details.")
+        st.stop()
+
+    # Get the most recent output from SadTalker
+    output_path = max(output_files, key=os.path.getctime)
+
+    if use_wav2lip:
+        status_text.text("Status: Refining Lip Sync (Wav2Lip)...")
+        with st.spinner("👄 Refining lip synchronization (Wav2Lip)..."):
+            wav2lip_output = os.path.join("results", f"wav2lip_{os.path.basename(output_path)}")
+            
+            wav2lip_cmd = [
+                sys.executable,
+                "inference.py",
+                "--checkpoint_path", "checkpoints/wav2lip_gan.pth",
+                "--face", f"../{output_path}",
+                "--audio", f"../{speech_path}",
+                "--outfile", f"../{wav2lip_output}"
+            ]
+
+            if DEBUG:
+                st.write("---")
+                st.subheader("DEBUG: 4. Wav2Lip Processing")
+                st.write("**Full Wav2Lip Command:**")
+                st.code(" ".join(wav2lip_cmd))
+
+            try:
+                process_w = subprocess.Popen(
+                    wav2lip_cmd,
+                    cwd="Wav2Lip",
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                    universal_newlines=True
+                )
+                
+                # Stream logs for Wav2Lip to the UI
+                for line in process_w.stdout:
+                    full_logs.append(line)
+                    log_container.code("".join(full_logs[-20:]))
+                    
+                    # Try to parse tqdm percentage for Wav2Lip
+                    match = re.search(r"(\d+)%\|", line)
+                    if match:
+                        try:
+                            percent = int(match.group(1))
+                            prog_bar.progress(percent / 100)
+                        except ValueError:
+                            pass
+                
+                process_w.wait()
+                
+                if process_w.returncode == 0 and os.path.exists(wav2lip_output):
+                    output_path = wav2lip_output
+                    status_text.text("Status: Lip Sync Complete!")
+                    prog_bar.progress(100)
+                else:
+                    st.warning("⚠️ Wav2Lip execution failed or output missing. Falling back to SadTalker output.")
+            except Exception as e:
+                st.warning(f"⚠️ Wav2Lip error: {e}. Falling back to SadTalker output.")
+
+    # ---------- Display Final Output ----------
+    if output_path:
         
         st.markdown("<br><br>", unsafe_allow_html=True)
         st.markdown('<div class="success-container">', unsafe_allow_html=True)
@@ -357,10 +425,11 @@ st.markdown("""
                 <li>🎤 Provide 40-50 seconds of clear voice sample without background noise</li>
                 <li>🎭 Adjust expression intensity for more or less dramatic facial movements</li>
                 <li>✨ Enable GFPGAN enhancement for higher quality output</li>
+                <li>👄 Use Wav2Lip for highly accurate lip movement matching</li>
             </ul>
         </div>
         <div class="tech-info">
-            <p><strong>Powered by:</strong> SadTalker (facial animation) • XTTS v2 (voice cloning) • GFPGAN (face enhancement)</p>
+            <p><strong>Powered by:</strong> SadTalker (facial animation) • Wav2Lip (lip sync) • XTTS v2 (voice cloning) • GFPGAN (face enhancement)</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
