@@ -68,7 +68,7 @@ RUN mkdir -p Wav2Lip/checkpoints && \
     -O 'Wav2Lip/checkpoints/wav2lip_gan.pth' && \
     mkdir -p Wav2Lip/face_detection/detection/sfd && \
     wget --header="Authorization: Bearer ${HF_TOKEN}" \
-    'https://huggingface.co/Nekochu/Wav2Lip/resolve/main/s3fd.pth' \
+    'https://huggingface.co/rippertnt/wav2lip/resolve/main/s3fd.pth' \
     -O 'Wav2Lip/face_detection/detection/sfd/s3fd.pth' && \
     echo "✅ Wav2Lip models downloaded successfully"
 
