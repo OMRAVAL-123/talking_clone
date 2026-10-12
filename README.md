@@ -1,5 +1,5 @@
 ---
-title: Gujarati TalkingAvatar Studio
+title:   TalkingAvatar Studio
 emoji: 🎭
 colorFrom: purple
 colorTo: pink
@@ -8,13 +8,13 @@ pinned: false
 license: mit
 ---
 
-# 🎭 Gujarati TalkingAvatar Studio
+# 🎭   TalkingAvatar Studio
 
 Create stunning talking avatar videos with **full facial expressions**, **head movements**, and **lip sync** from a single photo!
 
 ## ✨ Features
 
-- **🎙️ Gujarati Voice Cloning**: Uses XTTS v2 for high-quality Gujarati speech synthesis
+- **🎙️   Voice Cloning**: Uses XTTS v2 for high-quality   speech synthesis
 - **🎭 Expressive Animations**: SadTalker generates realistic facial expressions (not just lip sync!)
 - **🎯 Head Pose Generation**: Natural head movements synchronized with speech
 - **⚡ Expression Control**: Adjust animation intensity from subtle to dramatic
@@ -24,7 +24,7 @@ Create stunning talking avatar videos with **full facial expressions**, **head m
 
 1. **Upload a Photo** - A clear, front-facing portrait works best
 2. **Provide Voice Sample** - 10-20 seconds of reference audio (WAV)
-3. **Add Your Lyrics** - Text in Gujarati for speech synthesis
+3. **Add Your Lyrics** - Text in   for speech synthesis
 4. **Generate!** - Get an expressive talking avatar video
 
 ## 🛠️ Technology Stack
